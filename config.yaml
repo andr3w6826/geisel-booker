@@ -1,0 +1,10 @@
+auth:
+  username: #your username
+  password: #your password
+
+requests:
+  room: 522
+
+  hour1: "2:00pm" # no spaces, need lowercase
+ 
+  
