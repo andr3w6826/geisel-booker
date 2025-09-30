@@ -1,5 +1,4 @@
 # functions.py
-import yaml
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
 import re
