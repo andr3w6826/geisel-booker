@@ -6,7 +6,7 @@ This script opens the Geisel study room reservations site (`https://ucsd.libcal.
 1. Install Python 3: `https://www.python.org/downloads/`.
 2. In your terminal, navigate to the `geisel-booker` folder.
    - Example: `/Users/firstlast/Downloads/geisel-booker`
-3. Install dependencies:
+3. Install dependencies, so run this in your terminal:
    - `pip install -r requirements.txt`
 
 ### Configure
@@ -18,7 +18,7 @@ This script opens the Geisel study room reservations site (`https://ucsd.libcal.
 ### Run
 1. From the `geisel-booker` folder, run:
    - `sh run_booker.sh`
-2. Ensure `run_booker.sh` has the correct folder path in the `cd` command and that `python3` is available (`which python3`).
+2. Ensure `run_booker.sh` has the correct folder path in the `cd` command. It should look something like `/Users/firstlast/Downloads/geisel-booker`
 
 ### Notes
 - You may be prompted for Duo authentication periodically (as normal).
