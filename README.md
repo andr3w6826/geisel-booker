@@ -1,33 +1,34 @@
-# geisel-booker
+## geisel-booker
 
-This script automatically opens the Geisel study room reservations site (https://ucsd.libcal.com/reserve), logs in, and books a room 2 weeks in advance! Guaranteeing constant availability :)
+This script opens the Geisel study room reservations site (`https://ucsd.libcal.com/reserve`), logs in, and books a room 2 weeks in advance.
 
-How to set up:
+### Setup
+1. Install Python 3: `https://www.python.org/downloads/`.
+2. In your terminal, navigate to the `geisel-booker` folder.
+   - Example: `/Users/firstlast/Downloads/geisel-booker`
+3. Install dependencies:
+   - `pip install -r requirements.txt`
 
-    1. Make sure you have python3 installed (https://www.python.org/downloads/)
-    2. Inside your terminal, nagivate to the folder geisel-reservations
-        - Your file path will look something like /User/firstlast/Downloads/geisel-reservation
-    3. Run this command in the terminal to install the necessary packages "pip install -r requirements.txt"
+### Configure
+1. Open `config.json` and set your UCSD credentials under `auth.username` and `auth.password`.
+2. Set your desired `requests.room` and starting time `requests.hour1`.
+   - The program automatically books the maximum allowed duration.
+   - Date is fixed to 2 weeks in advance.
 
-How to use this script:
+### Run
+1. From the `geisel-booker` folder, run:
+   - `sh run_booker.sh`
+2. Ensure `run_booker.sh` has the correct folder path in the `cd` command and that `python3` is available (`which python3`).
 
-    1. You'll want to navigate to the config.json file first and plug in your username/password you use with UCSD authentication
-    2. Plug in the room you want and the time of day you want to start at
-        - The program will automatically book for maximum time allowed
-        - The option to choose the date is not available as it will always be 2 weeks in advance
-    3. Test out the script! Just run script.py either with a play but
+### Notes
+- You may be prompted for Duo authentication periodically (as normal).
 
-Notes:
-    - It will ask you to duo authenticate every once in awhile (just like you have to normally)
+### Automate with Shortcuts (macOS)
+1. Open the Shortcuts app on your Mac.
+2. Create a new shortcut with the action "Run Shell Script".
+3. Set Shell to `sh` and use a command like:
+   - `sh /Users/yourname/Downloads/geisel-booker/run_booker.sh`
+4. Create a new Automation (not a new Shortcut) that runs this shortcut daily at 12:01 AM.
 
-How to automate it! 
-    (Our next step is to get this running at 12:00am every day so we'll "permanently" have a Geisel room available!)
-
-- Open the Shortcuts application on your Mac
-- Add a new shortcut with task "Run Shell Script"
-- In the code part, you'll replace whats there whatever your filepath is to run_booker.sh. It should look something like "sh /Users/examplename/Downloads/geisel-booker/run_booker.sh" or whatever 
-- set the "Shell" to "sh" and do not run as administrator
-- Now that script is complete
-- To do the automation, create a new automation (not new shortcut) and attach the shortcut to the automation and set the automation to run at 12:01am everyday
-
-Let me know if you run into any issues, have suggestions, or questions! Email me at anc062@ucsd.edu
+### Contact
+Questions or suggestions? Email: anc062@ucsd.edu
