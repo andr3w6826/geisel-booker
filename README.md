@@ -12,6 +12,7 @@ This script opens the Geisel study room reservations site (`https://ucsd.libcal.
 ### Configure
 1. Open `config.json` and set your UCSD credentials under `auth.username` and `auth.password`.
 2. Set your desired `requests.room` and starting time `requests.hour1`.
+   - Keep the format of the time, all lowercase and no spaces( e.g. "3:00pm", "10:00am")
    - The program automatically books the maximum allowed duration.
    - Date is fixed to 2 weeks in advance.
 
