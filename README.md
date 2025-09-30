@@ -3,10 +3,11 @@
 This script opens the Geisel study room reservations site (`https://ucsd.libcal.com/reserve`), logs in, and books a room 2 weeks in advance.
 
 ### Setup
-1. Install Python 3: `https://www.python.org/downloads/`.
-2. In your terminal, navigate to the `geisel-booker` folder.
+1. Install Python 3 if you don't have it yet: `https://www.python.org/downloads/`.
+2. Download this project and open the .zip file on your computer
+3. In your terminal, navigate to the `geisel-booker` folder.
    - Example: `/Users/firstlast/Downloads/geisel-booker`
-3. Install dependencies, so run this in your terminal:
+4. Install dependencies, so run this in your terminal:
    - `pip install -r requirements.txt`
 
 ### Configure
