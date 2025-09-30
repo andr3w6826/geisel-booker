@@ -24,6 +24,10 @@ def run_step(step_name, func, *args, **kwargs):
 def main():
     base_dir = Path(__file__).resolve().parent        # <-- folder of script.py
     config_path = base_dir / "config.yaml"            # <-- geisel-booker/config.yaml
+
+    profile_dir = (base_dir / "pw-user-data").resolve()
+    print(f"Using profile dir: {profile_dir}")
+
     cfg = load_cfg(config_path)
     print(f"Using config: {config_path}")
 
@@ -42,7 +46,7 @@ def main():
         # Launch Chromium in *headed* mode so you can see the browser
         #browser = p.chromium.launch(headless=False, slow_mo=200)
         context = p.chromium.launch_persistent_context(
-            user_data_dir="./pw-user-data",
+            user_data_dir=str(profile_dir),
             headless=False,
             slow_mo=200
         )
