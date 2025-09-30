@@ -1,14 +1,16 @@
 # geisel-booker
 
-This script automatically opens the Geisel study room reservations site, logs in, and books a room 2 weeks in advance! Guaranteeing constant availability :)
+This script automatically opens the Geisel study room reservations site (https://ucsd.libcal.com/reserve), logs in, and books a room 2 weeks in advance! Guaranteeing constant availability :)
 
 How to set up:
+
     1. Make sure you have python3 installed (https://www.python.org/downloads/)
     2. Inside your terminal, nagivate to the folder geisel-reservations
         - Your file path will look something like /User/firstlast/Downloads/geisel-reservation
     3. Run this command in the terminal to install the necessary packages "pip install -r requirements.txt"
 
 How to use this script:
+
     1. You'll want to navigate to the config.json file first and plug in your username/password you use with UCSD authentication
     2. Plug in the room you want and the time of day you want to start at
         - The program will automatically book for maximum time allowed
