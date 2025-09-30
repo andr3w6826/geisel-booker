@@ -6,29 +6,6 @@ import json
 
 ADVANCE_DAYS = 14
 
-def load_storage(p, path="storage.json"):
-    """Create a new context using saved cookies and local storage."""
-    try:
-        with open(path, "r") as f:
-            storage = json.load(f)
-        context = p.chromium.launch_persistent_context(
-            user_data_dir="./pw-user-data",  # keeps cache, cookies, etc.
-            headless=False,
-            slow_mo=200,
-            storage_state=path               # preload saved cookies/storage
-        )
-        print(f"[info] Loaded storage state from {path}")
-        return context
-    except FileNotFoundError:
-        # First run (no storage.json yet)
-        return p.chromium.launch_persistent_context(
-            user_data_dir="./pw-user-data",
-            headless=False,
-            slow_mo=200
-        )
-
-
-
 def date_selector(page):
     target_date = datetime.now() + timedelta(days=ADVANCE_DAYS)
 
@@ -92,8 +69,6 @@ def aria_writer(room: str, start_time: str) -> str:
     else:
         floor = f"{floor_digit}th Floor" if floor_digit is not None else "Unknown Floor"
 
-    # Construct the aria-label.
-    # Wing-agnostic: stop after the colon, do not append "East"/"West".
     text = (
         f"{start_time} "
         f"{target_date.strftime('%A')}, {target_date.strftime('%B')} {target_date.day}, {target_date.year} "
@@ -107,12 +82,10 @@ def click_event_by_aria(page, aria_label: str):
     loc = page.locator(f"a.s-lc-eq-avail[aria-label='{aria_label}']")
     # bring it into view (horizontal scroller too)
     loc.scroll_into_view_if_needed()
-    # wait until it's actually clickable
     loc.wait_for(state="visible", timeout=10000)
     try:
-        loc.first.click()  # normal click
+        loc.first.click()
     except Exception:
-        # fallback if overlapped or tiny; click center via mouse
         box = loc.first.bounding_box()
         page.mouse.click(box["x"] + box["width"]/2, box["y"] + box["height"]/2)
 
@@ -142,8 +115,6 @@ def confirm_duo_device(page):
     page.locator("#trust-browser-button").click()
 
 def submit(page):
-    # page.locator("#terms_accept").click()
-    # page.get_by_role("button", name="Submit my Booking").click()
     btn = page.locator("#terms_accept")
     btn.wait_for(state="visible", timeout=10000)  # wait up to 10s
     print("Button text is:", btn.text_content())

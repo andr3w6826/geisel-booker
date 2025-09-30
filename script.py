@@ -42,9 +42,6 @@ def main():
 
     with sync_playwright() as p:
         
-        
-        # Launch Chromium in *headed* mode so you can see the browser
-        #browser = p.chromium.launch(headless=False, slow_mo=200)
         context = p.chromium.launch_persistent_context(
             user_data_dir=str(profile_dir),
             headless=False,
@@ -73,7 +70,6 @@ def main():
             pass  # it's fine if URL didn't change yet
         if ("SAML2" in page.url) or ('SSO' in page.url):
             print("On SAML page, proceeding to fill credentials...")
-            # Call your login helper
             run_step('fill_credentials', fn.fill_credentials, page, username, password)
             run_step('confirm_duo_device', fn.confirm_duo_device, page)
         
