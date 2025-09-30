@@ -1,4 +1,4 @@
-import yaml
+import json
 from pathlib import Path
 import functions as fn
 from playwright.sync_api import sync_playwright
@@ -6,7 +6,7 @@ from playwright.sync_api import TimeoutError
 
 def load_cfg(path):
     with open(path, "r") as f:
-        return yaml.safe_load(f) or {}
+        return json.load(f)
     
 def run_step(step_name, func, *args, **kwargs):
     """
@@ -23,7 +23,7 @@ def run_step(step_name, func, *args, **kwargs):
 
 def main():
     base_dir = Path(__file__).resolve().parent        # <-- folder of script.py
-    config_path = base_dir / "config.yaml"            # <-- geisel-booker/config.yaml
+    config_path = base_dir / "config.json"            # <-- geisel-booker/config.json
 
     profile_dir = (base_dir / "pw-user-data").resolve()
     print(f"Using profile dir: {profile_dir}")

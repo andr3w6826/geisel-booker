@@ -1,0 +1,11 @@
+{
+  "auth": {
+    "username": "",
+    "password": ""
+  },
+  "requests": {
+    "room": 522,
+    "hour1": "2:00pm"
+  }
+}
+
