@@ -1,3 +1,4 @@
 *.json
 pw-user-data/
 logs/
+config.jsonconfig.json
