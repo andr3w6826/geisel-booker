@@ -40,7 +40,7 @@ def main():
     room_str = cfg.get("requests", {}).get('room')
     start_time_cfg = cfg.get("requests", {}).get("hour1")
     advance_days = cfg.get("requests", {}).get("advance_days")
-    print(f"Booking Room: {room_str} at {start_time_cfg}:00 for {type} in {location}")
+    print(f"Booking Room: {room_str} at {start_time_cfg}:00 in {location} {advance_days} days in advance")
 
     # start at this URL
     url = "https://ucsd.libcal.com/reserve"
@@ -49,11 +49,11 @@ def main():
         
         context = p.chromium.launch_persistent_context(
             user_data_dir=str(profile_dir),
-            headless=False,
-            slow_mo=200
+            headless=True,
         )
         page = context.new_page()
         page.goto(url)
+        print(f"Navigated to {url}")
         # Switch buildings geisel/wongavery
         location_map = {
             "Geisel": "11273",

@@ -1,8 +1,5 @@
 # functions.py
-from pathlib import Path
 from datetime import datetime, timedelta, timezone
-import re
-import json
 
 
 def date_selector(page, advance_days):
@@ -91,6 +88,9 @@ def click_event_by_aria(page, aria_label: str):
 def select_last_end_time(page):
     sel = page.locator("select[id^='bookingend_']")
     options = sel.locator("option").all()
+    # idk why theres an error here but it works!
+    # print(f"Found {len(options)} end time options")
+    # print(options)
     last_opt = options[-1]
     label = last_opt.text_content().strip()
     value = last_opt.get_attribute("value")
@@ -116,8 +116,6 @@ def confirm_duo_device(page):
 def submit(page):
     btn = page.locator("#terms_accept")
     btn.wait_for(state="visible", timeout=10000)  # wait up to 10s
-    print("Button text is:", btn.text_content())
-    print("Is enabled?", btn.is_enabled())
     
     btn.click()
 def final_submit(page):
