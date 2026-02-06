@@ -33,9 +33,11 @@ I strongly recommend using a virtual environment (venv) so dependencies do not i
    - `14`: All other rooms open 14 days in advance
 
 ### Run
-1. From the `geisel-booker` folder, run:
-   - `sh run_booker.sh`
+1. From the `geisel-booker` folder, make the script executable (only needed once):
+   - `chmod +x run_booker.sh`
 2. Ensure `run_booker.sh` has the correct folder path in the `cd` command. It should look something like `/Users/firstlast/Downloads/geisel-booker`
+3. Run it:
+   - `./run_booker.sh` commond in terminal. 
 
 ### Notes
 - You may be prompted for Duo authentication periodically (as normal).
