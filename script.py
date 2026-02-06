@@ -97,6 +97,7 @@ def main():
         run_step("submit", fn.submit, page)
         run_step('final_submit', fn.final_submit, page)
 
+        print("Booking process completed. Closing browser.")
         page.close()
 
  
