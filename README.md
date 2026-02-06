@@ -2,29 +2,36 @@
 
 This script opens the Geisel study room reservations site (`https://ucsd.libcal.com/reserve`), logs in, and books a room 2 weeks in advance.
 
+
+First-Time Setup (IMPORTANT — Do Not Skip)
+I strongly recommend using a virtual environment (venv) so dependencies do not interfere with other Python projects on your computer.
+
 ### Setup
 1. Install Python 3 if you don't have it yet: `https://www.python.org/downloads/`.
 2. Download this project and open the .zip file on your computer
 3. In your terminal, navigate to the `geisel-booker` folder.
    - Example: `/Users/firstlast/Downloads/geisel-booker`
-4. Install dependencies, so run this in your terminal:
-   - `pip install -r requirements.txt`
+4. Create a Virtual Environment (VERY IMPORTANT)
+   Run: `python3 -m venv venv` then this `source venv/bin/activate` all in terminal
+5. Install required packages
+   Run: `python -m pip install -r requirements.txt` in terminal 
+4. Install playwright browsers (REQUIRED)
+   - `python -m playwright install`
 
 ### Configure
 1. Open `config.json` and set your UCSD credentials under `auth.username` and `auth.password`.
-2. Set your desired `requests.room` and starting time `requests.hour1`.
+2. Location: Either `Geisel` or `WongAvery` (its case sensitive oops)
+3. Set your desired room: 
+   - Examples: `Geisel Service Hub Room X` or `522` (only those 2 inputs are needed)
+4. Set your desired starting time `requests.hour1`.
    - Keep the format of the time, all lowercase and no spaces( e.g. "3:00pm", "10:00am")
    - The program automatically books the maximum allowed duration.
    - Date is fixed to 2 weeks in advance.
+   - Note WongAvery hours differ from Geisel
+5. Advance Days: Days in advance to book
+   - `1`: Geisel service hubs open 1 day in advance
+   - `14`: All other rooms open 14 days in advance
 
-### Valid Parameters
-1. Location: either 'Geisel' or 'WongAvery'
-2. Room: 'Service Hub Room 1', '522'
-3. hour1: "xx:xxam" All lowercase no spaces. 
-   - Note that WongAvery hours different from Geisels
-3. Advance Days: Practically speaking either 1 or 14
-   - 1. 1 is for Geisel service hubs as they only open 24hr in advance
-   - 2. 14 is for Geisel and Wong Avery Rooms
 ### Run
 1. From the `geisel-booker` folder, run:
    - `sh run_booker.sh`

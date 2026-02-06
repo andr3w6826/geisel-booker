@@ -3,6 +3,7 @@ set -euo pipefail
 
 
 # Directory of the repo (absolute path = no ambiguity)
+# PUT YOUR OWN PATH HERE BELOW
 REPO_DIR="/Users/firstlast/repo"
 cd "$REPO_DIR"
 
