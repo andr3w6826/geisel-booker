@@ -50,6 +50,7 @@ def main():
         context = p.chromium.launch_persistent_context(
             user_data_dir=str(profile_dir),
             headless=True,
+            slow_mo=2000,  # slow down actions by 1s to make it more human-like and easier to observe
         )
         page = context.new_page()
         page.goto(url)
@@ -81,24 +82,58 @@ def main():
         run_step("click_event_by_aria", fn.click_event_by_aria, page, aria)
         # Select the last end time option (latest possible end time)
         run_step("select_last_end_time", fn.select_last_end_time, page)
+
+        # old stuff below, may need to be re-integrated depending on how the booking flow changes after clicking the slot
+        # run_step("submit_booking", fn.submit_booking, page)
+
+        # # Final submission may require another SAML login 
+        # try:
+        #     page.wait_for_url("**SAML2**", timeout=10000)
+        # except TimeoutError:
+        #     pass  # it's fine if URL didn't change yet
+        # # it works!
+        # if ("SAML2" in page.url) or ('SSO' in page.url):
+        #     print("On SAML page, proceeding to fill credentials...")
+        #     run_step('fill_credentials', fn.fill_credentials, page, username, password)
+        #     run_step('confirm_duo_device', fn.confirm_duo_device, page)
+            
+        # run_step("submit", fn.submit, page)
+        # run_step('final_submit', fn.final_submit, page)
+
+        # print("Booking process completed. Closing browser.")
+        # page.close()
+        # After submit_booking
         run_step("submit_booking", fn.submit_booking, page)
 
-        # Final submission may require another SAML login 
+        # Wait a moment for any navigation to settle
+        page.wait_for_load_state("domcontentloaded", timeout=10000)
+
+        # Check if we need SAML login
         try:
-            page.wait_for_url("**SAML2**", timeout=5000)
+            page.wait_for_url("**SAML**", timeout=5000)
+            if ("SAML2" in page.url) or ('SSO' in page.url):
+                print("On SAML page, proceeding to fill credentials...")
+                run_step('fill_credentials', fn.fill_credentials, page, username, password)
+                run_step('confirm_duo_device', fn.confirm_duo_device, page)
         except TimeoutError:
-            pass  # it's fine if URL didn't change yet
-        # it works!
-        if ("SAML2" in page.url) or ('SSO' in page.url):
-            print("On SAML page, proceeding to fill credentials...")
-            run_step('fill_credentials', fn.fill_credentials, page, username, password)
-            run_step('confirm_duo_device', fn.confirm_duo_device, page)
-        
-        run_step("submit", fn.submit, page)
-        run_step('final_submit', fn.final_submit, page)
+            print("No SAML redirect detected, continuing...")
+
+        # Now check which button is available
+        try:
+            # Try to find the terms_accept button first
+            if page.locator("#terms_accept").is_visible(timeout=2000):
+                run_step("submit", fn.submit, page)
+        except:
+            pass
+
+        try:
+            # Try to find the final submit button
+            if page.get_by_role("button", name="Submit my Booking").is_visible(timeout=2000):
+                run_step('final_submit', fn.final_submit, page)
+        except:
+            pass
 
         print("Booking process completed. Closing browser.")
-        page.close()
 
  
 if __name__ == "__main__":
