@@ -1,5 +1,6 @@
 # functions.py
 from datetime import datetime, timedelta, timezone
+from playwright.sync_api import expect
 
 
 def date_selector(page, advance_days):
@@ -86,31 +87,48 @@ def click_event_by_aria(page, aria_label: str):
         page.mouse.click(box["x"] + box["width"]/2, box["y"] + box["height"]/2)
 
 def select_last_end_time(page):
-    sel = page.locator("select[id^='bookingend_']")
+    # 1. Find the select menu
+    sel = page.locator("select[id^='bookingend_']:visible").first
+    
+    # Wait for it to be visible
+    sel.wait_for(state="visible", timeout=15000)
+    
+    # 2. List every visible option
     options = sel.locator("option").all()
-    # idk why theres an error here but it works!
-    # print(f"Found {len(options)} end time options")
-    # print(options)
-    last_opt = options[-1]
-    label = last_opt.text_content().strip()
-    value = last_opt.get_attribute("value")
-
-    sel.select_option(value=value)
-    print(f"Selected last option: '{label}'")
+    
+    # 3. Print every visible option: Print debuggin
+    # print("\n=== ALL OPTIONS ===")
+    # for i, option in enumerate(options):
+    #     value = option.get_attribute("value")
+    #     text = option.text_content().strip()
+    #     disabled = option.get_attribute("disabled")
+    #     is_disabled = " [DISABLED]" if disabled else ""
+    #     print(f"{i}: value='{value}' text='{text}'{is_disabled}")
+    
+    print("===================\n")
+    
+    # 4. Select the LAST option
+    last_option = options[-1]
+    last_value = last_option.get_attribute("value")
+    last_text = last_option.text_content().strip()
+    
+    sel.select_option(value=last_value)
+    
+    print(f"✓ Selected last option: '{last_text}' ({last_value})\n")
 
 def submit_booking(page):
     page.get_by_role("button", name="Submit Times").click()
 
 def fill_credentials(page, TARGET_USERNAME, TARGET_PASSWORD):
 
-    page.locator("#ssousername").wait_for(state="visible", timeout=5000)
+    page.locator("#ssousername").wait_for(state="visible", timeout=10000)
 
     page.locator("#ssousername").fill(TARGET_USERNAME)
     page.locator("#ssopassword").fill(TARGET_PASSWORD)
     page.get_by_role("button", name="Login", exact=True).click()
 
 def confirm_duo_device(page):
-    page.locator("#trust-browser-button").wait_for(state="visible", timeout=25000)
+    page.locator("#trust-browser-button").wait_for(state="visible", timeout=50000)
     page.locator("#trust-browser-button").click()
 
 def submit(page):
