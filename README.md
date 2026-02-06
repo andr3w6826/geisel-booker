@@ -17,6 +17,14 @@ This script opens the Geisel study room reservations site (`https://ucsd.libcal.
    - The program automatically books the maximum allowed duration.
    - Date is fixed to 2 weeks in advance.
 
+### Valid Parameters
+1. Location: either 'Geisel' or 'WongAvery'
+2. Room: 'Service Hub Room 1', '522'
+3. hour1: "xx:xxam" All lowercase no spaces. 
+   - Note that WongAvery hours different from Geisels
+3. Advance Days: Practically speaking either 1 or 14
+   - 1. 1 is for Geisel service hubs as they only open 24hr in advance
+   - 2. 14 is for Geisel and Wong Avery Rooms
 ### Run
 1. From the `geisel-booker` folder, run:
    - `sh run_booker.sh`

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # change to actual filepath of "geisel-booker" folder
-cd "(Put in file path of the folder)"  # e.g. /Users/firstlastname/Downloads/geisel-booker
+cd "/Users/andrewchen/Personal_Projects/geisel-booker"  # e.g. /Users/firstlastname/Downloads/geisel-booker
 
 
 mkdir -p logs

@@ -1,10 +1,13 @@
 {
   "auth": {
-    "username": "",
-    "password": ""
+    "username": "anc062@ucsd.edu",
+    "password": "Andr3w#36459"
   },
   "requests": {
-    "room": 522,
-    "hour1": "2:00pm"
+    "location": "WongAvery",
+    "room": "201",
+    "hour1": "11:00am",
+    "advance_days": 14
   }
 }
+

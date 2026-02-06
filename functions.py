@@ -4,14 +4,13 @@ from datetime import datetime, timedelta, timezone
 import re
 import json
 
-ADVANCE_DAYS = 14
 
-def date_selector(page):
-    target_date = datetime.now() + timedelta(days=ADVANCE_DAYS)
+def date_selector(page, advance_days):
+    target_date = datetime.now() + timedelta(days=advance_days)
 
     today_month = datetime.now().strftime("%B")
 
-    def target_midnight_utc_ms(days=ADVANCE_DAYS):
+    def target_midnight_utc_ms(days=advance_days):
         # 1) Compute the local target *date* (no time)
         target_date = (datetime.now() + timedelta(days=days)).date()
         # 2) Build midnight *UTC* for that date
@@ -21,7 +20,7 @@ def date_selector(page):
         # 3) Convert to ms since epoch
         return int(target_utc_midnight.timestamp() * 1000)
     
-    timestamp_ms = target_midnight_utc_ms(ADVANCE_DAYS)
+    timestamp_ms = target_midnight_utc_ms(advance_days)
     target_month = timestamp_ms_to_month = datetime.fromtimestamp(timestamp_ms / 1000, tz=timezone.utc).strftime("%B")
     print(f"unix timestamp (ms): {timestamp_ms}, target month: {target_month}")
 
@@ -37,7 +36,7 @@ def date_selector(page):
     
 
 
-def aria_writer(room: str, start_time: str) -> str:
+def aria_writer(room: str, start_time: str, location: str, advance_days) -> str:
     """
         Build the aria-label string for a given room and start time.
         Example target:
@@ -45,7 +44,7 @@ def aria_writer(room: str, start_time: str) -> str:
     """
 
     # Compute target date
-    target_date = datetime.now() + timedelta(days=ADVANCE_DAYS)
+    target_date = datetime.now() + timedelta(days=advance_days)
 
     try:
         floor_digit = int(str(room)[0])  # take first character
@@ -53,26 +52,26 @@ def aria_writer(room: str, start_time: str) -> str:
         floor_digit = None
 
     if floor_digit == 1:
-        floor = "1st Floor"
+        floor = ": 1st Floor"
     elif floor_digit == 2:
-        floor = "2nd Floor"
+        floor = ": 2nd Floor"
     elif floor_digit == 4:
-        floor = "4th Floor"
+        floor = ": 4th Floor"
     elif floor_digit == 5:
-        floor = "5th Floor"
+        floor = ": 5th Floor"
     elif floor_digit == 6:
-        floor = "6th Floor"
+        floor = ": 6th Floor"
     elif floor_digit == 7:
-        floor = "7th Floor"
+        floor = ": 7th Floor"
     elif floor_digit == 8:
-        floor = "8th Floor"
+        floor = ": 8th Floor"
     else:
-        floor = f"{floor_digit}th Floor" if floor_digit is not None else "Unknown Floor"
+        floor = f"{floor_digit}th Floor" if floor_digit is not None else ""
 
     text = (
         f"{start_time} "
         f"{target_date.strftime('%A')}, {target_date.strftime('%B')} {target_date.day}, {target_date.year} "
-        f"- Geisel {room}: {floor} - Available"
+        f"- {location} {room}{floor} - Available"
     )
     print(f'Looking for: {text}')
     return text

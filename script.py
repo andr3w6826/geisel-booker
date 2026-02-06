@@ -31,13 +31,18 @@ def main():
     cfg = load_cfg(config_path)
     print(f"Using config: {config_path}")
 
-    req = cfg.get("requests", {})
-    room_str = req.get('room')
-    print(f"Room: {room_str}")
-    start_time_cfg = req.get("hour1")
+    # inputted username and passworld
     username = cfg.get("auth", {}).get("username")
     password = cfg.get("auth", {}).get("password")
 
+    # user preferences parameters from config.json
+    location = cfg.get("requests", {}).get("location")
+    room_str = cfg.get("requests", {}).get('room')
+    start_time_cfg = cfg.get("requests", {}).get("hour1")
+    advance_days = cfg.get("requests", {}).get("advance_days")
+    print(f"Booking Room: {room_str} at {start_time_cfg}:00 for {type} in {location}")
+
+    # start at this URL
     url = "https://ucsd.libcal.com/reserve"
 
     with sync_playwright() as p:
@@ -49,21 +54,36 @@ def main():
         )
         page = context.new_page()
         page.goto(url)
+        # Switch buildings geisel/wongavery
+        location_map = {
+            "Geisel": "11273",
+            "WongAvery": "11274"
+        }
 
+        lid_value = location_map.get(location)
+
+        if lid_value is None:
+            raise ValueError(f"Unknown location: {location}")
+        page.select_option("#lid", value=lid_value)
+
+        # checks if we need to DUO login
         if "SAML" in page.url:
             run_step("fill_credentials", fn.fill_credentials, page, username, password)
             run_step("confirm_duo_device", fn.confirm_duo_device, page)
 
-        run_step("date_selector", fn.date_selector, page)
+        # Find the correct date 
+        run_step("date_selector", fn.date_selector, page, advance_days)
 
-        aria = run_step("aria_writer", fn.aria_writer, room_str, start_time_cfg)
+        # Construct the aria-label text to find the correct booking slot
+        aria = run_step("aria_writer", fn.aria_writer, room_str, start_time_cfg, location, advance_days)
+
+        # Click the booking slot
         run_step("click_event_by_aria", fn.click_event_by_aria, page, aria)
+        # Select the last end time option (latest possible end time)
         run_step("select_last_end_time", fn.select_last_end_time, page)
-
         run_step("submit_booking", fn.submit_booking, page)
 
-        print(page.url)
-
+        # Final submission may require another SAML login 
         try:
             page.wait_for_url("**SAML2**", timeout=5000)
         except TimeoutError:
@@ -74,7 +94,7 @@ def main():
             run_step('confirm_duo_device', fn.confirm_duo_device, page)
         
         run_step("submit", fn.submit, page)
-        run_step('final_sub mit', fn.final_submit, page)
+        run_step('final_submit', fn.final_submit, page)
 
         input("Press Enter to close the browser...")
         page.close()
