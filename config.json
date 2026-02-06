@@ -1,0 +1,13 @@
+{
+  "auth": {
+    "username": "anc062@ucsd.edu",
+    "password": "errr"
+  },
+  "requests": {
+    "location": "WongAvery",
+    "room": "201",
+    "hour1": "11:00am",
+    "advance_days": 14
+  }
+}
+
