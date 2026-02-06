@@ -103,14 +103,14 @@ def submit_booking(page):
 
 def fill_credentials(page, TARGET_USERNAME, TARGET_PASSWORD):
 
-    page.locator("#ssousername").wait_for(state="visible", timeout=10000)
+    page.locator("#ssousername").wait_for(state="visible", timeout=5000)
 
     page.locator("#ssousername").fill(TARGET_USERNAME)
     page.locator("#ssopassword").fill(TARGET_PASSWORD)
     page.get_by_role("button", name="Login", exact=True).click()
 
 def confirm_duo_device(page):
-    page.locator("#trust-browser-button").wait_for(state="visible", timeout=50000)
+    page.locator("#trust-browser-button").wait_for(state="visible", timeout=25000)
     page.locator("#trust-browser-button").click()
 
 def submit(page):

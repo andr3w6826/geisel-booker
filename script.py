@@ -88,6 +88,7 @@ def main():
             page.wait_for_url("**SAML2**", timeout=5000)
         except TimeoutError:
             pass  # it's fine if URL didn't change yet
+        # it works!
         if ("SAML2" in page.url) or ('SSO' in page.url):
             print("On SAML page, proceeding to fill credentials...")
             run_step('fill_credentials', fn.fill_credentials, page, username, password)
