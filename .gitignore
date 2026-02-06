@@ -2,3 +2,4 @@
 pw-user-data/
 logs/
 venv/
+config.json
