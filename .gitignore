@@ -1,4 +1,3 @@
-*.json
 pw-user-data/
 logs/
 venv/

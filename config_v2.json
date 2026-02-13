@@ -1,0 +1,13 @@
+{
+  "auth": {
+    "username": "xxx",
+    "password": "xxx"
+  },
+  "requests": {
+    "building": "Geisel",
+    "room": "522",
+    "hour1": "2:00pm",
+    "advance_days": 1
+  }
+}
+
