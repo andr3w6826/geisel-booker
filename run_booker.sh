@@ -14,4 +14,4 @@ source "$REPO_DIR/venv/bin/activate"
 # python -m playwright install chromium >/dev/null 2>&1 || true
 
 # Run
-python script.py
+python script_v2.py
