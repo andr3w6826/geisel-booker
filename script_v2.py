@@ -25,7 +25,15 @@ with sync_playwright() as p:
     page = context.new_page()
     page.goto(RESERVE_URL, wait_until="domcontentloaded")
 
- 
+    # ============================================================
+    # DEBUG: print all libcal cookies after page load
+    # if PHPSESSID is missing or id comes back as 1, this is why
+    # cookies = context.cookies(["https://ucsd.libcal.com"])
+    # print("libcal cookies after page.goto:")
+    # for c in cookies:
+    #     print(f"  {c['name']} | expires={c['expires']} | domain={c['domain']}")
+    # ============================================================
+
     grid_resp = context.request.post(
         GRID_URL,
         headers={
@@ -34,7 +42,7 @@ with sync_playwright() as p:
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
             "Accept": "application/json, text/javascript, */*; q=0.01",
         },
-        data=GRID_PAYLOAD,  # string, not dict
+        data=GRID_PAYLOAD,
     )
 
     if grid_resp.status == 200:
@@ -48,90 +56,103 @@ with sync_playwright() as p:
     grid_data = grid_resp.json()['slots']
 
     # Find the slot that matches our desired start time and eid
-    grid_resp_checksum= payload_utils.find_checksum(grid_data, start_str, int(eid))
+    grid_resp_checksum = payload_utils.find_checksum(grid_data, start_str, int(eid))
     print(f'Desired slot checksum: {grid_resp_checksum}')
 
     ADD_PAYLOAD, add_payload_dict = payload_utils.construct_add_payload(grid_resp_checksum, grid_payload_dict, start_str)
+    print(f'add_payload_dict: {add_payload_dict}')
 
-    add_resp = context.request.post(
-        ADD_URL,
-        headers={
-            "X-Requested-With": "XMLHttpRequest",
-            "Referer": RESERVE_URL,
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "Accept": "application/json, text/javascript, */*; q=0.01"
-        },
-        data = ADD_PAYLOAD,
-    )
-    if add_resp.status == 200:
-        print("add response 200")
+    add_resp = page.evaluate("""
+    async (payload) => {
+        const r = await fetch('/spaces/availability/booking/add', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'Accept': 'application/json, text/javascript, */*; q=0.01'
+            },
+            body: payload
+        });
+        return r.json();
+    }
+""", ADD_PAYLOAD)
 
-    add_resp = add_resp.json()
+
+    # ============================================================
+    # DEBUG: if id=1 here, the add POST is not authenticated
+    # print(f"add_resp: {add_resp}")
+    # print(f"add_resp booking id: {add_resp['bookings'][0]['id']}")
+    # ============================================================
 
     # take add_resp, extract information, construct add(update) payload
     update_payload_dict = payload_utils.extract_add_response(add_resp, grid_payload_dict)
+    print(f"update_payload_dict: {update_payload_dict}")
     UPDATE_PAYLOAD = payload_utils.construct_update_payload(update_payload_dict)
 
-    update_resp = context.request.post(
-        ADD_URL,
-        headers={
-            "X-Requested-With": "XMLHttpRequest",
-            "Referer": RESERVE_URL,
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "Accept": "application/json, text/javascript, */*; q=0.01"
-        },
-        data = UPDATE_PAYLOAD,
-    )
-    if update_resp.status == 200:
-        print("update response 200")
+    update_resp = page.evaluate("""
+        async (payload) => {
+            const r = await fetch('/spaces/availability/booking/add', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'Accept': 'application/json, text/javascript, */*; q=0.01'
+                },
+                body: payload
+            });
+            return r.json();
+        }
+    """, UPDATE_PAYLOAD)
     
-    update_resp = update_resp.json()
+    print(f"update_resp: {update_resp}")
     time_payload_dict = payload_utils.extract_update_response(update_resp)
+    print(f"time_payload_dict: {time_payload_dict}")
     TIME_PAYLAOD = payload_utils.construct_time_payload(time_payload_dict)
-    time_resp = context.request.post(
-        TIMES_URL,
-        headers={
-            "X-Requested-With": "XMLHttpRequest",
-            "Referer": RESERVE_URL,
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "Accept": "application/json, text/javascript, */*; q=0.01"
-        },
-        data = TIME_PAYLAOD,
-    )
-    if time_resp.status == 200:
-        print("time response 200")
+    time_resp = page.evaluate("""
+        async (payload) => {
+            const r = await fetch('/ajax/space/times', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'Accept': 'application/json, text/javascript, */*; q=0.01'
+                },
+                body: payload
+            });
+            return r.json();
+        }
+    """, TIME_PAYLAOD)
+    auth_url = "https://ucsd.libcal.com" + time_resp["redirect"]
+    auth_resp = page.evaluate(f"""
+        async () => {{
+            const r = await fetch('{auth_url}');
+            return r.text();
+        }}
+    """)
 
-    print(time_resp.json())
-
-    if "redirect" in time_resp.json():
-        page.goto("https://ucsd.libcal.com" + time_resp.json()["redirect"], wait_until="domcontentloaded")
-        if page.url.startswith("https://a5.ucsd"):
-            input()
-            # user_utils.fill_credentials(page)
-            # user_utils.confirm_duo_device(page)
-            # page.goto("https://ucsd.libcal.com" + time_resp.json()["redirect"], wait_until="domcontentloaded")
-
-    page.goto(f"https://ucsd.libcal.com" + time_resp.json()['redirect'], wait_until="domcontentloaded")
-
-
-    session_id = payload_utils.extract_session_id(page)
+    session_id = payload_utils.extract_session_id_from_html(auth_resp)
     print("session_id:", session_id)
-
 
     checkout_payload = payload_utils.construct_checkout_payload(session_id)
 
-    checkout_resp = context.request.post(
-        CHECKOUT_URL,  # <-- use the real checkout URL you captured
-        headers={
-            "X-Requested-With": "XMLHttpRequest",
-            "Referer": RESERVE_URL,
-            "Accept": "application/json, text/javascript, */*; q=0.01",
-            # DO NOT set Content-Type here
-        },
-        data=checkout_payload  # pass dict, not string
-    )
+    checkout_resp = page.evaluate("""
+        async (payload) => {
+            const formData = new FormData();
+            for (const [key, value] of Object.entries(payload)) {
+                formData.append(key, value);
+            }
+            const r = await fetch('/ajax/equipment/checkout', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json, text/javascript, */*; q=0.01'
+                },
+                body: formData
+            });
+            return r.text();
+        }
+    """, checkout_payload)
 
-    print("checkout status:", checkout_resp.status)
-    print(checkout_resp.text()[:300])
+    print(checkout_resp[:300])
 
     context.close()
